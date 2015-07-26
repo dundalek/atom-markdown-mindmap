@@ -1,0 +1,16 @@
+'atom-workspace, atom-workspace atom-text-editor':
+  'ctrl-M': 'markdown-mindmap:toggle'
+
+'.platform-darwin .markdown-mindmap':
+  'cmd-+': 'markdown-mindmap:zoom-in'
+  'cmd-=': 'markdown-mindmap:zoom-in'
+  'cmd--': 'markdown-mindmap:zoom-out'
+  'cmd-_': 'markdown-mindmap:zoom-out'
+  'cmd-0': 'markdown-mindmap:reset-zoom'
+
+'.platform-win32 .markdown-mindmap, .platform-linux .markdown-mindmap':
+  'ctrl-+': 'markdown-mindmap:zoom-in'
+  'ctrl-=': 'markdown-mindmap:zoom-in'
+  'ctrl--': 'markdown-mindmap:zoom-out'
+  'ctrl-_': 'markdown-mindmap:zoom-out'
+  'ctrl-0': 'markdown-mindmap:reset-zoom'

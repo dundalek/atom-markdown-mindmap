@@ -36,7 +36,7 @@ render = (text, filePath, callback) ->
   roaster ?= require 'roaster'
   options =
     sanitize: false
-    breaks: atom.config.get('markdown-preview.breakOnSingleNewline')
+    breaks: atom.config.get('markdown-mindmap.breakOnSingleNewline')
 
   # Remove the <!doctype> since otherwise marked will escape it
   # https://github.com/chjj/marked/issues/354

@@ -10,9 +10,9 @@ fs = require 'fs-plus'
 renderer = require './renderer'
 
 module.exports =
-class MarkdownPreviewView extends ScrollView
+class MarkdownMindmapView extends ScrollView
   @content: ->
-    @div class: 'markdown-preview native-key-bindings', tabindex: -1
+    @div class: 'markdown-mindmap native-key-bindings', tabindex: -1
 
   constructor: ({@editorId, @filePath}) ->
     super
@@ -34,7 +34,7 @@ class MarkdownPreviewView extends ScrollView
           @subscribeToFilePath(@filePath)
 
   serialize: ->
-    deserializer: 'MarkdownPreviewView'
+    deserializer: 'MarkdownMindmapView'
     filePath: @getPath()
     editorId: @editorId
 
@@ -94,13 +94,13 @@ class MarkdownPreviewView extends ScrollView
         @saveAs()
       'core:copy': (event) =>
         event.stopPropagation() if @copyToClipboard()
-      'markdown-preview:zoom-in': =>
+      'markdown-mindmap:zoom-in': =>
         zoomLevel = parseFloat(@css('zoom')) or 1
         @css('zoom', zoomLevel + .1)
-      'markdown-preview:zoom-out': =>
+      'markdown-mindmap:zoom-out': =>
         zoomLevel = parseFloat(@css('zoom')) or 1
         @css('zoom', zoomLevel - .1)
-      'markdown-preview:reset-zoom': =>
+      'markdown-mindmap:reset-zoom': =>
         @css('zoom', 1)
 
     changeHandler = =>
@@ -115,16 +115,16 @@ class MarkdownPreviewView extends ScrollView
       @disposables.add @file.onDidChange(changeHandler)
     else if @editor?
       @disposables.add @editor.getBuffer().onDidStopChanging ->
-        changeHandler() if atom.config.get 'markdown-preview.liveUpdate'
+        changeHandler() if atom.config.get 'markdown-mindmap.liveUpdate'
       @disposables.add @editor.onDidChangePath => @emitter.emit 'did-change-title'
       @disposables.add @editor.getBuffer().onDidSave ->
-        changeHandler() unless atom.config.get 'markdown-preview.liveUpdate'
+        changeHandler() unless atom.config.get 'markdown-mindmap.liveUpdate'
       @disposables.add @editor.getBuffer().onDidReload ->
-        changeHandler() unless atom.config.get 'markdown-preview.liveUpdate'
+        changeHandler() unless atom.config.get 'markdown-mindmap.liveUpdate'
 
-    @disposables.add atom.config.onDidChange 'markdown-preview.breakOnSingleNewline', changeHandler
+    @disposables.add atom.config.onDidChange 'markdown-mindmap.breakOnSingleNewline', changeHandler
 
-    @disposables.add atom.config.observe 'markdown-preview.useGitHubStyle', (useGitHubStyle) =>
+    @disposables.add atom.config.observe 'markdown-mindmap.useGitHubStyle', (useGitHubStyle) =>
       if useGitHubStyle
         @element.setAttribute('data-use-github-style', '')
       else
@@ -157,24 +157,24 @@ class MarkdownPreviewView extends ScrollView
         @loaded = true
         @html(domFragment)
         @emitter.emit 'did-change-markdown'
-        @originalTrigger('markdown-preview:markdown-changed')
+        @originalTrigger('markdown-mindmap:markdown-changed')
 
   getTitle: ->
     if @file?
-      "#{path.basename(@getPath())} Preview"
+      "#{path.basename(@getPath())} Mindmap"
     else if @editor?
-      "#{@editor.getTitle()} Preview"
+      "#{@editor.getTitle()} Mindmap"
     else
-      "Markdown Preview"
+      "Markdown Mindmap"
 
   getIconName: ->
     "markdown"
 
   getURI: ->
     if @file?
-      "markdown-preview://#{@getPath()}"
+      "markdown-mindmap://#{@getPath()}"
     else
-      "markdown-preview://editor/#{@editorId}"
+      "markdown-mindmap://editor/#{@editorId}"
 
   getPath: ->
     if @file?
@@ -201,10 +201,10 @@ class MarkdownPreviewView extends ScrollView
     Array.prototype.slice.apply(textEditorStyles.childNodes).map (styleElement) ->
       styleElement.innerText
 
-  getMarkdownPreviewCSS: ->
+  getMarkdownMindmapCSS: ->
     markdowPreviewRules = []
-    ruleRegExp = /\.markdown-preview/
-    cssUrlRefExp = /url\(atom:\/\/markdown-preview\/assets\/(.*)\)/
+    ruleRegExp = /\.markdown-mindmap/
+    cssUrlRefExp = /url\(atom:\/\/markdown-mindmap\/assets\/(.*)\)/
 
     for stylesheet in @getDocumentStyleSheets()
       if stylesheet.rules?
@@ -279,9 +279,9 @@ class MarkdownPreviewView extends ScrollView
               <head>
                   <meta charset="utf-8" />
                   <title>#{title}</title>
-                  <style>#{@getMarkdownPreviewCSS()}</style>
+                  <style>#{@getMarkdownMindmapCSS()}</style>
               </head>
-              <body class='markdown-preview'>#{htmlBody}</body>
+              <body class='markdown-mindmap'>#{htmlBody}</body>
             </html>""" + "\n" # Ensure trailing newline
 
           fs.writeFileSync(htmlFilePath, html)
@@ -291,7 +291,7 @@ class MarkdownPreviewView extends ScrollView
     @[0] is other?[0] # Compare DOM elements
 
 if Grim.includeDeprecatedAPIs
-  MarkdownPreviewView::on = (eventName) ->
-    if eventName is 'markdown-preview:markdown-changed'
-      Grim.deprecate("Use MarkdownPreviewView::onDidChangeMarkdown instead of the 'markdown-preview:markdown-changed' jQuery event")
+  MarkdownMindmapView::on = (eventName) ->
+    if eventName is 'markdown-mindmap:markdown-changed'
+      Grim.deprecate("Use MarkdownMindmapView::onDidChangeMarkdown instead of the 'markdown-mindmap:markdown-changed' jQuery event")
     super

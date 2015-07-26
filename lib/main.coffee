@@ -1,20 +1,20 @@
 url = require 'url'
 
-MarkdownPreviewView = null # Defer until used
+MarkdownMindmapView = null # Defer until used
 renderer = null # Defer until used
 
-createMarkdownPreviewView = (state) ->
-  MarkdownPreviewView ?= require './markdown-preview-view'
-  new MarkdownPreviewView(state)
+createMarkdownMindmapView = (state) ->
+  MarkdownMindmapView ?= require './markdown-mindmap-view'
+  new MarkdownMindmapView(state)
 
-isMarkdownPreviewView = (object) ->
-  MarkdownPreviewView ?= require './markdown-preview-view'
-  object instanceof MarkdownPreviewView
+isMarkdownMindmapView = (object) ->
+  MarkdownMindmapView ?= require './markdown-mindmap-view'
+  object instanceof MarkdownMindmapView
 
 atom.deserializers.add
-  name: 'MarkdownPreviewView'
+  name: 'MarkdownMindmapView'
   deserialize: (state) ->
-    createMarkdownPreviewView(state) if state.constructor is Object
+    createMarkdownMindmapView(state) if state.constructor is Object
 
 module.exports =
   config:
@@ -43,22 +43,22 @@ module.exports =
 
   activate: ->
     atom.commands.add 'atom-workspace',
-      'markdown-preview:toggle': =>
+      'markdown-mindmap:toggle': =>
         @toggle()
-      'markdown-preview:copy-html': =>
+      'markdown-mindmap:copy-html': =>
         @copyHtml()
-      'markdown-preview:toggle-break-on-single-newline': ->
-        keyPath = 'markdown-preview.breakOnSingleNewline'
+      'markdown-mindmap:toggle-break-on-single-newline': ->
+        keyPath = 'markdown-mindmap.breakOnSingleNewline'
         atom.config.set(keyPath, not atom.config.get(keyPath))
 
     previewFile = @previewFile.bind(this)
-    atom.commands.add '.tree-view .file .name[data-name$=\\.markdown]', 'markdown-preview:preview-file', previewFile
-    atom.commands.add '.tree-view .file .name[data-name$=\\.md]', 'markdown-preview:preview-file', previewFile
-    atom.commands.add '.tree-view .file .name[data-name$=\\.mdown]', 'markdown-preview:preview-file', previewFile
-    atom.commands.add '.tree-view .file .name[data-name$=\\.mkd]', 'markdown-preview:preview-file', previewFile
-    atom.commands.add '.tree-view .file .name[data-name$=\\.mkdown]', 'markdown-preview:preview-file', previewFile
-    atom.commands.add '.tree-view .file .name[data-name$=\\.ron]', 'markdown-preview:preview-file', previewFile
-    atom.commands.add '.tree-view .file .name[data-name$=\\.txt]', 'markdown-preview:preview-file', previewFile
+    atom.commands.add '.tree-view .file .name[data-name$=\\.markdown]', 'markdown-mindmap:preview-file', previewFile
+    atom.commands.add '.tree-view .file .name[data-name$=\\.md]', 'markdown-mindmap:preview-file', previewFile
+    atom.commands.add '.tree-view .file .name[data-name$=\\.mdown]', 'markdown-mindmap:preview-file', previewFile
+    atom.commands.add '.tree-view .file .name[data-name$=\\.mkd]', 'markdown-mindmap:preview-file', previewFile
+    atom.commands.add '.tree-view .file .name[data-name$=\\.mkdown]', 'markdown-mindmap:preview-file', previewFile
+    atom.commands.add '.tree-view .file .name[data-name$=\\.ron]', 'markdown-mindmap:preview-file', previewFile
+    atom.commands.add '.tree-view .file .name[data-name$=\\.txt]', 'markdown-mindmap:preview-file', previewFile
 
     atom.workspace.addOpener (uriToOpen) ->
       try
@@ -66,7 +66,7 @@ module.exports =
       catch error
         return
 
-      return unless protocol is 'markdown-preview:'
+      return unless protocol is 'markdown-mindmap:'
 
       try
         pathname = decodeURI(pathname) if pathname
@@ -74,25 +74,25 @@ module.exports =
         return
 
       if host is 'editor'
-        createMarkdownPreviewView(editorId: pathname.substring(1))
+        createMarkdownMindmapView(editorId: pathname.substring(1))
       else
-        createMarkdownPreviewView(filePath: pathname)
+        createMarkdownMindmapView(filePath: pathname)
 
   toggle: ->
-    if isMarkdownPreviewView(atom.workspace.getActivePaneItem())
+    if isMarkdownMindmapView(atom.workspace.getActivePaneItem())
       atom.workspace.destroyActivePaneItem()
       return
 
     editor = atom.workspace.getActiveTextEditor()
     return unless editor?
 
-    grammars = atom.config.get('markdown-preview.grammars') ? []
+    grammars = atom.config.get('markdown-mindmap.grammars') ? []
     return unless editor.getGrammar().scopeName in grammars
 
     @addPreviewForEditor(editor) unless @removePreviewForEditor(editor)
 
   uriForEditor: (editor) ->
-    "markdown-preview://editor/#{editor.id}"
+    "markdown-mindmap://editor/#{editor.id}"
 
   removePreviewForEditor: (editor) ->
     uri = @uriForEditor(editor)
@@ -108,10 +108,10 @@ module.exports =
     previousActivePane = atom.workspace.getActivePane()
     options =
       searchAllPanes: true
-    if atom.config.get('markdown-preview.openPreviewInSplitPane')
+    if atom.config.get('markdown-mindmap.openPreviewInSplitPane')
       options.split = 'right'
-    atom.workspace.open(uri, options).done (markdownPreviewView) ->
-      if isMarkdownPreviewView(markdownPreviewView)
+    atom.workspace.open(uri, options).done (markdownMindmapView) ->
+      if isMarkdownMindmapView(markdownMindmapView)
         previousActivePane.activate()
 
   previewFile: ({target}) ->
@@ -122,7 +122,7 @@ module.exports =
       @addPreviewForEditor(editor)
       return
 
-    atom.workspace.open "markdown-preview://#{encodeURI(filePath)}", searchAllPanes: true
+    atom.workspace.open "markdown-mindmap://#{encodeURI(filePath)}", searchAllPanes: true
 
   copyHtml: ->
     editor = atom.workspace.getActiveTextEditor()

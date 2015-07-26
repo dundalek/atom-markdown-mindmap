@@ -1,9 +1,9 @@
 {
-  "name": "markdown-preview",
-  "version": "0.150.0",
+  "name": "markdown-mindmap",
+  "version": "0.0.1",
   "main": "./lib/main",
-  "description": "Open a rendered version of the Markdown in the current editor with `ctrl-shift-m`.",
-  "repository": "https://github.com/atom/markdown-preview",
+  "description": "Visualize markdown files as mindmaps in Atom editor",
+  "repository": "https://github.com/dundalek/markdown-mindmap",
   "license": "MIT",
   "engines": {
     "atom": "*"

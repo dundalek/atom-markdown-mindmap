@@ -1,14 +1,14 @@
 path = require 'path'
 fs = require 'fs-plus'
 temp = require 'temp'
-MarkdownPreviewView = require '../lib/markdown-preview-view'
+MarkdownMindmapView = require '../lib/markdown-mindmap-view'
 
-describe "MarkdownPreviewView", ->
+describe "MarkdownMindmapView", ->
   [file, preview, workspaceElement] = []
 
   beforeEach ->
     filePath = atom.project.getDirectories()[0].resolve('subdir/file.markdown')
-    preview = new MarkdownPreviewView({filePath})
+    preview = new MarkdownMindmapView({filePath})
     jasmine.attachToDOM(preview.element)
 
     waitsForPromise ->
@@ -18,7 +18,7 @@ describe "MarkdownPreviewView", ->
       atom.packages.activatePackage('language-javascript')
 
     waitsForPromise ->
-      atom.packages.activatePackage('markdown-preview')
+      atom.packages.activatePackage('markdown-mindmap')
 
   afterEach ->
     preview.destroy()
@@ -56,7 +56,7 @@ describe "MarkdownPreviewView", ->
         atom.workspace.open('new.markdown')
 
       runs ->
-        preview = new MarkdownPreviewView({editorId: atom.workspace.getActiveTextEditor().id})
+        preview = new MarkdownMindmapView({editorId: atom.workspace.getActiveTextEditor().id})
 
         jasmine.attachToDOM(preview.element)
         expect(preview.getPath()).toBe atom.workspace.getActiveTextEditor().getPath()
@@ -125,7 +125,7 @@ describe "MarkdownPreviewView", ->
 
         filePath = path.join(temp.mkdirSync('atom'), 'foo.md')
         fs.writeFileSync(filePath, "![absolute](#{filePath})")
-        preview = new MarkdownPreviewView({filePath})
+        preview = new MarkdownMindmapView({filePath})
         jasmine.attachToDOM(preview.element)
 
         waitsForPromise ->
@@ -142,7 +142,7 @@ describe "MarkdownPreviewView", ->
   describe "gfm newlines", ->
     describe "when gfm newlines are not enabled", ->
       it "creates a single paragraph with <br>", ->
-        atom.config.set('markdown-preview.breakOnSingleNewline', false)
+        atom.config.set('markdown-mindmap.breakOnSingleNewline', false)
 
         waitsForPromise ->
           preview.renderMarkdown()
@@ -152,7 +152,7 @@ describe "MarkdownPreviewView", ->
 
     describe "when gfm newlines are enabled", ->
       it "creates a single paragraph with no <br>", ->
-        atom.config.set('markdown-preview.breakOnSingleNewline', true)
+        atom.config.set('markdown-mindmap.breakOnSingleNewline', true)
 
         waitsForPromise ->
           preview.renderMarkdown()
@@ -164,7 +164,7 @@ describe "MarkdownPreviewView", ->
     beforeEach ->
       preview.destroy()
       filePath = atom.project.getDirectories()[0].resolve('subdir/code-block.md')
-      preview = new MarkdownPreviewView({filePath})
+      preview = new MarkdownMindmapView({filePath})
       jasmine.attachToDOM(preview.element)
 
     it "saves the rendered HTML and opens it", ->
@@ -178,15 +178,15 @@ describe "MarkdownPreviewView", ->
           cssText: "#{selector} #{css}"
         }
 
-      markdownPreviewStyles = [
+      markdownMindmapStyles = [
         {
           rules: [
-            createRule ".markdown-preview", "{ color: orange; }"
+            createRule ".markdown-mindmap", "{ color: orange; }"
           ]
         }, {
           rules: [
             createRule ".not-included", "{ color: green; }"
-            createRule ".markdown-preview :host", "{ color: purple; }"
+            createRule ".markdown-mindmap :host", "{ color: purple; }"
           ]
         }
       ]
@@ -194,7 +194,7 @@ describe "MarkdownPreviewView", ->
       atomTextEditorStyles = [
         "atom-text-editor .line { color: brown; }\natom-text-editor .number { color: cyan; }"
         "atom-text-editor :host .something { color: black; }"
-        "atom-text-editor .hr { background: url(atom://markdown-preview/assets/hr.png); }"
+        "atom-text-editor .hr { background: url(atom://markdown-mindmap/assets/hr.png); }"
       ]
 
       expect(fs.isFileSync(outputPath)).toBe false
@@ -204,7 +204,7 @@ describe "MarkdownPreviewView", ->
 
       runs ->
         spyOn(atom, 'showSaveDialogSync').andReturn(outputPath)
-        spyOn(preview, 'getDocumentStyleSheets').andReturn(markdownPreviewStyles)
+        spyOn(preview, 'getDocumentStyleSheets').andReturn(markdownMindmapStyles)
         spyOn(preview, 'getTextEditorStyles').andReturn(atomTextEditorStyles)
         atom.commands.dispatch preview.element, 'core:save-as'
 
@@ -243,7 +243,7 @@ describe "MarkdownPreviewView", ->
       preview.element.remove()
 
       filePath = atom.project.getDirectories()[0].resolve('subdir/code-block.md')
-      preview = new MarkdownPreviewView({filePath})
+      preview = new MarkdownMindmapView({filePath})
       jasmine.attachToDOM(preview.element)
 
       waitsForPromise ->
