@@ -14,7 +14,8 @@
     "grim": "^1.2.1",
     "pathwatcher": "^4.3",
     "temp": "^0.8.1",
-    "underscore-plus": "^1.0.0"
+    "underscore-plus": "^1.0.0",
+    "markmap": "*"
   },
   "devDependencies": {
     "coffeelint": "^1.9.7",
