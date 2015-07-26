@@ -6,6 +6,9 @@ Grim = require 'grim'
 _ = require 'underscore-plus'
 fs = require 'fs-plus'
 {File} = require 'pathwatcher'
+d3 = require 'markmap/node_modules/d3'
+markmapParse = require 'markmap/parse.markdown'
+markmapMindmap = require 'markmap/view.mindmap'
 
 renderer = require './renderer'
 
@@ -149,15 +152,19 @@ class MarkdownMindmapView extends ScrollView
       renderer.toHTML source, @getPath(), @getGrammar(), callback
 
   renderMarkdownText: (text) ->
-    renderer.toDOMFragment text, @getPath(), @getGrammar(), (error, domFragment) =>
-      if error
-        @showError(error)
-      else
-        @loading = false
-        @loaded = true
-        @html(domFragment)
-        @emitter.emit 'did-change-markdown'
-        @originalTrigger('markdown-mindmap:markdown-changed')
+      # if error
+      #   @showError(error)
+      # else
+      @loading = false
+      @loaded = true
+      
+      # TODO paralel rendering
+      data = markmapParse(text)
+      @empty()
+      markmapMindmap(d3.select(@get(0)), data)
+      
+      @emitter.emit 'did-change-markdown'
+      @originalTrigger('markdown-mindmap:markdown-changed')
 
   getTitle: ->
     if @file?
