@@ -161,8 +161,25 @@ class MarkdownMindmapView extends ScrollView
       @empty()
       markmapMindmap(d3.select(@get(0)), data)
       
+      nodes = d3.select(@get(0)).selectAll('.markmap g.node')
+      toggleHandler = nodes.on('click')
+      nodes.on('click', null)
+      nodes.selectAll('circle').on('click', toggleHandler)
+      nodes.selectAll('text').on 'click', (d) =>
+        @scrollToLine d.lines[0]
+      
       @emitter.emit 'did-change-markdown'
       @originalTrigger('markdown-mindmap:markdown-changed')
+
+  scrollToLine: (line) ->
+    atom.workspace.open(@getPath(),
+      initialLine: line
+      activatePane: false
+      searchAllPanes: true).then (editor) ->
+        cursor = editor.getCursorScreenPosition()
+        view = atom.views.getView(editor)
+        pixel = view.pixelPositionForScreenPosition(cursor).top
+        editor.setScrollTop pixel
 
   getTitle: ->
     if @file?
