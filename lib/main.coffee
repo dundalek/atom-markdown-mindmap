@@ -1,7 +1,6 @@
 url = require 'url'
 
 MarkdownMindmapView = null # Defer until used
-renderer = null # Defer until used
 
 createMarkdownMindmapView = (state) ->
   MarkdownMindmapView ?= require './markdown-mindmap-view'
@@ -124,14 +123,14 @@ module.exports =
 
     atom.workspace.open "markdown-mindmap://#{encodeURI(filePath)}", searchAllPanes: true
 
-  copyHtml: ->
-    editor = atom.workspace.getActiveTextEditor()
-    return unless editor?
-
-    renderer ?= require './renderer'
-    text = editor.getSelectedText() or editor.getText()
-    renderer.toHTML text, editor.getPath(), editor.getGrammar(), (error, html) ->
-      if error
-        console.warn('Copying Markdown as HTML failed', error)
-      else
-        atom.clipboard.write(html)
+  # copyHtml: ->
+  #   editor = atom.workspace.getActiveTextEditor()
+  #   return unless editor?
+  # 
+  #   renderer ?= require './renderer'
+  #   text = editor.getSelectedText() or editor.getText()
+  #   renderer.toHTML text, editor.getPath(), editor.getGrammar(), (error, html) ->
+  #     if error
+  #       console.warn('Copying Markdown as HTML failed', error)
+  #     else
+  #       atom.clipboard.write(html)

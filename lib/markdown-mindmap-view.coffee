@@ -10,8 +10,6 @@ d3 = require 'markmap/node_modules/d3'
 markmapParse = require 'markmap/parse.markdown'
 markmapMindmap = require 'markmap/view.mindmap'
 
-renderer = require './renderer'
-
 module.exports =
 class MarkdownMindmapView extends ScrollView
   @content: ->
@@ -145,11 +143,11 @@ class MarkdownMindmapView extends ScrollView
     else
       Promise.resolve(null)
 
-  getHTML: (callback) ->
-    @getMarkdownSource().then (source) =>
-      return unless source?
-
-      renderer.toHTML source, @getPath(), @getGrammar(), callback
+  # getHTML: (callback) ->
+  #   @getMarkdownSource().then (source) =>
+  #     return unless source?
+  # 
+  #     renderer.toHTML source, @getPath(), @getGrammar(), callback
 
   renderMarkdownText: (text) ->
       # if error
