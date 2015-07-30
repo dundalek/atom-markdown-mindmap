@@ -6,7 +6,6 @@ Grim = require 'grim'
 _ = require 'underscore-plus'
 fs = require 'fs-plus'
 {File} = require 'pathwatcher'
-d3 = require 'markmap/node_modules/d3'
 markmapParse = require 'markmap/parse.markdown'
 markmapMindmap = require 'markmap/view.mindmap'
 
@@ -153,16 +152,18 @@ class MarkdownMindmapView extends ScrollView
       # if error
       #   @showError(error)
       # else
-      @loading = false
+      @hideLoading()
       @loaded = true
       
       # TODO paralel rendering
       data = markmapParse(text)
-      @empty()
-      markmapMindmap(d3.select(@get(0)), data)
-      
-      nodes = d3.select(@get(0)).selectAll('.markmap g.node')
-      toggleHandler = nodes.on('click')
+      if not @mindmap?
+        @mindmap = markmapMindmap($('<svg style="height: 100%; width: 100%"></svg>').appendTo(this).get(0), data, {duration: 0})
+  
+      @mindmap.setData(data).set({duration: 0}).update().set({duration: 750})
+
+      nodes = @mindmap.svg.selectAll('g.markmap-node')
+      toggleHandler = @mindmap.click.bind @mindmap
       nodes.on('click', null)
       nodes.selectAll('circle').on('click', toggleHandler)
       nodes.selectAll('text').on 'click', (d) =>
@@ -254,8 +255,15 @@ class MarkdownMindmapView extends ScrollView
 
   showLoading: ->
     @loading = true
-    @html $$$ ->
-      @div class: 'markdown-spinner', 'Loading Markdown\u2026'
+    spinner = @find('>.markdown-spinner')
+    if spinner.length == 0
+      @append $$$ ->
+        @div class: 'markdown-spinner', 'Loading Markdown\u2026'
+    spinner.show()
+  
+  hideLoading: ->
+    @loading = false
+    @find('>.markdown-spinner').hide()
 
   copyToClipboard: ->
     return false if @loading
