@@ -2,7 +2,7 @@
 
 Type `mind` in the Atom command palette to open a mindmap view of the current markdown file. The full command name is `Markdown Mindmap: Toggle`.
 
-![Mindmap screenshot](screenshot.gif)
+![Mindmap screenshot](https://github.com/dundalek/atom-markdown-mindmap/blob/master/screenshot.gif?raw=true)
 
 This extension is built using the [markmap](https://github.com/dundalek/markmap) component.
 
