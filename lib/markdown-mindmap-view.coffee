@@ -158,9 +158,9 @@ class MarkdownMindmapView extends ScrollView
       # TODO paralel rendering
       data = markmapParse(text)
       if not @mindmap?
-        @mindmap = markmapMindmap($('<svg style="height: 100%; width: 100%"></svg>').appendTo(this).get(0), data, {duration: 0})
-  
-      @mindmap.setData(data).set({duration: 0}).update().set({duration: 750})
+        @mindmap = markmapMindmap($('<svg style="height: 100%; width: 100%"></svg>').appendTo(this).get(0), data)
+      else
+        @mindmap.setData(data).set({duration: 0}).update().set({duration: 750})
 
       nodes = @mindmap.svg.selectAll('g.markmap-node')
       toggleHandler = @mindmap.click.bind @mindmap
