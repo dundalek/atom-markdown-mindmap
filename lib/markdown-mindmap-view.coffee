@@ -8,6 +8,7 @@ fs = require 'fs-plus'
 {File} = require 'pathwatcher'
 markmapParse = require 'markmap/parse.markdown'
 markmapMindmap = require 'markmap/view.mindmap'
+transformHeadings = require 'markmap/transform.headings'
 
 module.exports =
 class MarkdownMindmapView extends ScrollView
@@ -157,6 +158,7 @@ class MarkdownMindmapView extends ScrollView
       
       # TODO paralel rendering
       data = markmapParse(text)
+      data = transformHeadings(data)
       if not @mindmap?
         @mindmap = markmapMindmap($('<svg style="height: 100%; width: 100%"></svg>').appendTo(this).get(0), data)
       else
@@ -167,7 +169,7 @@ class MarkdownMindmapView extends ScrollView
       nodes.on('click', null)
       nodes.selectAll('circle').on('click', toggleHandler)
       nodes.selectAll('text').on 'click', (d) =>
-        @scrollToLine d.lines[0]
+        @scrollToLine d.line
       
       @emitter.emit 'did-change-markdown'
       @originalTrigger('markdown-mindmap:markdown-changed')
