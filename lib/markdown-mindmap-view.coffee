@@ -167,7 +167,7 @@ class MarkdownMindmapView extends ScrollView
       toggleHandler = @mindmap.click.bind @mindmap
       nodes.on('click', null)
       nodes.selectAll('circle').on('click', toggleHandler)
-      nodes.selectAll('text').on 'click', (d) =>
+      nodes.selectAll('text,rect').on 'click', (d) =>
         @scrollToLine d.line
       
       @emitter.emit 'did-change-markdown'
