@@ -123,14 +123,6 @@ class MarkdownMindmapView extends ScrollView
       @disposables.add @editor.getBuffer().onDidReload ->
         changeHandler() unless atom.config.get 'markdown-mindmap.liveUpdate'
 
-    @disposables.add atom.config.onDidChange 'markdown-mindmap.breakOnSingleNewline', changeHandler
-
-    @disposables.add atom.config.observe 'markdown-mindmap.useGitHubStyle', (useGitHubStyle) =>
-      if useGitHubStyle
-        @element.setAttribute('data-use-github-style', '')
-      else
-        @element.removeAttribute('data-use-github-style')
-
     @disposables.add atom.config.observe 'markdown-mindmap.theme', changeHandler
 
     @disposables.add atom.config.observe 'markdown-mindmap.linkShape', changeHandler

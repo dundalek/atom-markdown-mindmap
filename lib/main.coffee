@@ -31,10 +31,6 @@ module.exports =
       type: 'string'
       default: 'diagonal'
       enum: ['diagonal', 'bracket']
-    # TODO: remove these and their uses in other places
-    breakOnSingleNewline:
-      type: 'boolean'
-      default: false
     grammars:
       type: 'array'
       default: [
@@ -44,10 +40,6 @@ module.exports =
         'text.plain'
         'text.plain.null-grammar'
       ]
-    useGitHubStyle:
-      title: 'Use GitHub.com style'
-      type: 'boolean'
-      default: false
 
   activate: ->
     atom.commands.add 'atom-workspace',
