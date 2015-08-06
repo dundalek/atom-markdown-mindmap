@@ -131,6 +131,10 @@ class MarkdownMindmapView extends ScrollView
       else
         @element.removeAttribute('data-use-github-style')
 
+    @disposables.add atom.config.observe 'markdown-mindmap.theme', changeHandler
+
+    @disposables.add atom.config.observe 'markdown-mindmap.linkShape', changeHandler
+
   renderMarkdown: ->
     @showLoading() unless @loaded
     @getMarkdownSource().then (source) => @renderMarkdownText(source) if source?
@@ -159,10 +163,13 @@ class MarkdownMindmapView extends ScrollView
       # TODO paralel rendering
       data = markmapParse(text)
       data = transformHeadings(data)
+      options =
+        preset: atom.config.get('markdown-mindmap.theme')
+        linkShape: atom.config.get('markdown-mindmap.linkShape')
       if not @mindmap?
-        @mindmap = markmapMindmap($('<svg style="height: 100%; width: 100%"></svg>').appendTo(this).get(0), data)
+        @mindmap = markmapMindmap($('<svg style="height: 100%; width: 100%"></svg>').appendTo(this).get(0), data, options)
       else
-        @mindmap.setData(data).set({duration: 0}).update().set({duration: 750})
+        @mindmap.setData(data).set(options).set({duration: 0}).update().set({duration: 750})
 
       nodes = @mindmap.svg.selectAll('g.markmap-node')
       toggleHandler = @mindmap.click.bind @mindmap

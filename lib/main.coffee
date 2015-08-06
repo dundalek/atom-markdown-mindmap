@@ -17,15 +17,24 @@ atom.deserializers.add
 
 module.exports =
   config:
-    breakOnSingleNewline:
-      type: 'boolean'
-      default: false
     liveUpdate:
       type: 'boolean'
       default: true
     openPreviewInSplitPane:
       type: 'boolean'
       default: true
+    theme:
+      type: 'string'
+      default: 'default'
+      enum: ['default', 'colorful']
+    linkShape:
+      type: 'string'
+      default: 'diagonal'
+      enum: ['diagonal', 'bracket']
+    # TODO: remove these and their uses in other places
+    breakOnSingleNewline:
+      type: 'boolean'
+      default: false
     grammars:
       type: 'array'
       default: [
