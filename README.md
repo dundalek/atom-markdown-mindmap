@@ -6,7 +6,7 @@ Type `mind` in the Atom command palette to open a mindmap view of the current ma
 
 You can switch between different themes in package settings.
 
-![Different theme](https://github.com/dundalek/atom-markdown-mindmap/blob/master/screenshot2.pngf?raw=true)
+![Different theme](https://github.com/dundalek/atom-markdown-mindmap/blob/master/screenshot2.png?raw=true)
 
 This extension is built using the [markmap](https://github.com/dundalek/markmap) component.
 
