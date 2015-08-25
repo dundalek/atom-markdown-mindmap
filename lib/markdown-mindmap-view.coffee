@@ -85,24 +85,25 @@ class MarkdownMindmapView extends ScrollView
     @disposables.add atom.grammars.onDidAddGrammar => _.debounce((=> @renderMarkdown()), 250)
     @disposables.add atom.grammars.onDidUpdateGrammar _.debounce((=> @renderMarkdown()), 250)
 
-    atom.commands.add @element,
-      'core:move-up': =>
-        @scrollUp()
-      'core:move-down': =>
-        @scrollDown()
-      'core:save-as': (event) =>
-        event.stopPropagation()
-        @saveAs()
-      'core:copy': (event) =>
-        event.stopPropagation() if @copyToClipboard()
-      'markdown-mindmap:zoom-in': =>
-        zoomLevel = parseFloat(@css('zoom')) or 1
-        @css('zoom', zoomLevel + .1)
-      'markdown-mindmap:zoom-out': =>
-        zoomLevel = parseFloat(@css('zoom')) or 1
-        @css('zoom', zoomLevel - .1)
-      'markdown-mindmap:reset-zoom': =>
-        @css('zoom', 1)
+    # disable events for now, maybe reimplement them later
+    # atom.commands.add @element,
+    #   'core:move-up': =>
+    #     @scrollUp()
+    #   'core:move-down': =>
+    #     @scrollDown()
+    #   'core:save-as': (event) =>
+    #     event.stopPropagation()
+    #     @saveAs()
+    #   'core:copy': (event) =>
+    #     event.stopPropagation() if @copyToClipboard()
+    #   'markdown-mindmap:zoom-in': =>
+    #     zoomLevel = parseFloat(@css('zoom')) or 1
+    #     @css('zoom', zoomLevel + .1)
+    #   'markdown-mindmap:zoom-out': =>
+    #     zoomLevel = parseFloat(@css('zoom')) or 1
+    #     @css('zoom', zoomLevel - .1)
+    #   'markdown-mindmap:reset-zoom': =>
+    #     @css('zoom', 1)
 
     changeHandler = =>
       @renderMarkdown()

@@ -10,10 +10,10 @@
 ]
 
 'context-menu':
-  '.markdown-mindmap': [
-    {label: 'Copy As HTML', command: 'core:copy'}
-    {label: 'Save As HTML\u2026', command: 'core:save-as'}
-  ]
+  # '.markdown-mindmap': [
+  #   {label: 'Copy As HTML', command: 'core:copy'}
+  #   {label: 'Save As HTML\u2026', command: 'core:save-as'}
+  # ]
   '.tree-view .file .name[data-name$=\\.markdown]':
     [{label: 'Markdown Mindmap', command:  'markdown-mindmap:preview-file'}]
   '.tree-view .file .name[data-name$=\\.md]':
