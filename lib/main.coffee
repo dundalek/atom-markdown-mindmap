@@ -26,7 +26,7 @@ module.exports =
     theme:
       type: 'string'
       default: 'default'
-      enum: ['default', 'colorful']
+      enum: ['default', 'colorful', 'default-dark', 'colorful-dark']
     linkShape:
       type: 'string'
       default: 'diagonal'

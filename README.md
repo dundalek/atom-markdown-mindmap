@@ -4,7 +4,7 @@ Type `mind` in the Atom command palette to open a mindmap view of the current ma
 
 ![Mindmap screenshot](https://github.com/dundalek/atom-markdown-mindmap/blob/master/screenshot.gif?raw=true)
 
-You can switch between different themes in package settings.
+You can switch between different themes in package settings. Dark themes variants are also available.
 
 ![Different theme](https://github.com/dundalek/atom-markdown-mindmap/blob/master/screenshot2.png?raw=true)
 
