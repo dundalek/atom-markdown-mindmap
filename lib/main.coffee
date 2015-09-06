@@ -1,4 +1,5 @@
 url = require 'url'
+{CompositeDisposable} = require 'atom'
 
 MarkdownMindmapView = null # Defer until used
 
@@ -20,6 +21,9 @@ module.exports =
     liveUpdate:
       type: 'boolean'
       default: true
+    autoOpen:
+      type: 'boolean'
+      default: false
     openPreviewInSplitPane:
       type: 'boolean'
       default: true
@@ -42,7 +46,14 @@ module.exports =
       ]
 
   activate: ->
+    @disposables = new CompositeDisposable
+    
+    @disposables.add atom.workspace.onDidChangeActivePaneItem (editor) =>
+      @autoOpen(editor)
+    
     atom.commands.add 'atom-workspace',
+      'markdown-mindmap:toggle-auto-mode': =>
+        @toggleAutoOpen()
       'markdown-mindmap:toggle': =>
         @toggle()
       'markdown-mindmap:copy-html': =>
@@ -78,6 +89,9 @@ module.exports =
       else
         createMarkdownMindmapView(filePath: pathname)
 
+  deactivate: ->
+    @disposables.dispose()
+
   toggle: ->
     if isMarkdownMindmapView(atom.workspace.getActivePaneItem())
       atom.workspace.destroyActivePaneItem()
@@ -91,6 +105,10 @@ module.exports =
 
     @addPreviewForEditor(editor) unless @removePreviewForEditor(editor)
 
+  toggleAutoOpen: ->
+    key = 'markdown-mindmap.autoOpen'
+    atom.config.set(key, !atom.config.get(key))
+
   uriForEditor: (editor) ->
     "markdown-mindmap://editor/#{editor.id}"
 
@@ -102,6 +120,16 @@ module.exports =
       true
     else
       false
+
+  autoOpen: (editor) ->
+    return unless atom.config.get('markdown-mindmap.autoOpen') and editor?
+    
+    grammars = atom.config.get('markdown-mindmap.grammars') ? []
+    newPath = editor.getPath()
+    return unless newPath and @activeEditor != newPath and editor.getGrammar?()?.scopeName in grammars
+
+    @activeEditor = newPath
+    @addPreviewForEditor(editor)
 
   addPreviewForEditor: (editor) ->
     uri = @uriForEditor(editor)
