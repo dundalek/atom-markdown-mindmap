@@ -120,24 +120,24 @@ class MarkdownMindmapView extends ScrollView
     @disposables.add atom.grammars.onDidUpdateGrammar _.debounce((=> @renderMarkdown()), 250)
 
     # disable events for now, maybe reimplement them later
-    # atom.commands.add @element,
-    #   'core:move-up': =>
-    #     @scrollUp()
-    #   'core:move-down': =>
-    #     @scrollDown()
-    #   'core:save-as': (event) =>
-    #     event.stopPropagation()
-    #     @saveAs()
-    #   'core:copy': (event) =>
-    #     event.stopPropagation() if @copyToClipboard()
-    #   'markdown-mindmap:zoom-in': =>
-    #     zoomLevel = parseFloat(@css('zoom')) or 1
-    #     @css('zoom', zoomLevel + .1)
-    #   'markdown-mindmap:zoom-out': =>
-    #     zoomLevel = parseFloat(@css('zoom')) or 1
-    #     @css('zoom', zoomLevel - .1)
-    #   'markdown-mindmap:reset-zoom': =>
-    #     @css('zoom', 1)
+    atom.commands.add @element,
+      # 'core:move-up': =>
+      #   @scrollUp()
+      # 'core:move-down': =>
+      #   @scrollDown()
+      'core:save-as': (event) =>
+        event.stopPropagation()
+        @saveAs()
+      'core:copy': (event) =>
+        event.stopPropagation() if @copyToClipboard()
+      # 'markdown-mindmap:zoom-in': =>
+      #   zoomLevel = parseFloat(@css('zoom')) or 1
+      #   @css('zoom', zoomLevel + .1)
+      # 'markdown-mindmap:zoom-out': =>
+      #   zoomLevel = parseFloat(@css('zoom')) or 1
+      #   @css('zoom', zoomLevel - .1)
+      # 'markdown-mindmap:reset-zoom': =>
+      #   @css('zoom', 1)
 
     changeHandler = =>
       @renderMarkdown()
@@ -174,7 +174,7 @@ class MarkdownMindmapView extends ScrollView
     else
       Promise.resolve(null)
 
-  getHTML: (callback) ->
+  getSVG: (callback) ->
     state = @mindmap.state
     nodes = @mindmap.layout(state).nodes
     minX = Math.round(d3.min(nodes, (d) -> d.x))
@@ -215,7 +215,7 @@ class MarkdownMindmapView extends ScrollView
       # else
       @hideLoading()
       @loaded = true
-      
+
       # TODO paralel rendering
       data = markmapParse(text)
       data = transformHeadings(data)
@@ -226,7 +226,7 @@ class MarkdownMindmapView extends ScrollView
         @mindmap = markmapMindmap($('<svg style="height: 100%; width: 100%"></svg>').appendTo(this).get(0), data, options)
       else
         @mindmap.setData(data).set(options).set({duration: 0}).update().set({duration: 750})
-      
+
       cls = this.attr('class').replace(/markdown-mindmap-theme-[^\s]+/, '')
       cls += ' markdown-mindmap-theme-' + atom.config.get('markdown-mindmap.theme')
       this.attr('class', cls)
@@ -237,7 +237,7 @@ class MarkdownMindmapView extends ScrollView
       nodes.selectAll('circle').on('click', toggleHandler)
       nodes.selectAll('text,rect').on 'click', (d) =>
         @scrollToLine d.line
-      
+
       @emitter.emit 'did-change-markdown'
       @originalTrigger('markdown-mindmap:markdown-changed')
 
@@ -329,7 +329,7 @@ class MarkdownMindmapView extends ScrollView
       @append $$$ ->
         @div class: 'markdown-spinner', 'Loading Markdown\u2026'
     spinner.show()
-  
+
   hideLoading: ->
     @loading = false
     @find('>.markdown-spinner').hide()
@@ -337,16 +337,9 @@ class MarkdownMindmapView extends ScrollView
   copyToClipboard: ->
     return false if @loading
 
-    selection = window.getSelection()
-    selectedText = selection.toString()
-    selectedNode = selection.baseNode
-
-    # Use default copy event handler if there is selected text inside this view
-    return false if selectedText and selectedNode? and (@[0] is selectedNode or $.contains(@[0], selectedNode))
-
-    @getHTML (error, html) ->
+    @getSVG (error, html) ->
       if error?
-        console.warn('Copying Markdown as HTML failed', error)
+        console.warn('Copying Markdown as SVG failed', error)
       else
         atom.clipboard.write(html)
 
@@ -356,34 +349,22 @@ class MarkdownMindmapView extends ScrollView
     return if @loading
 
     filePath = @getPath()
-    title = 'Markdown to HTML'
+    title = 'Markdown to SVG'
     if filePath
       title = path.parse(filePath).name
-      filePath += '.html'
+      filePath += '.svg'
     else
-      filePath = 'untitled.md.html'
+      filePath = 'untitled.md.svg'
       if projectPath = atom.project.getPaths()[0]
         filePath = path.join(projectPath, filePath)
 
     if htmlFilePath = atom.showSaveDialogSync(filePath)
 
-      @getHTML (error, htmlBody) =>
+      @getSVG (error, htmlBody) =>
         if error?
-          console.warn('Saving Markdown as HTML failed', error)
+          console.warn('Saving Markdown as SVG failed', error)
         else
-
-          html = """
-            <!DOCTYPE html>
-            <html>
-              <head>
-                  <meta charset="utf-8" />
-                  <title>#{title}</title>
-                  <style>#{@getMarkdownMindmapCSS()}</style>
-              </head>
-              <body class='markdown-mindmap'>#{htmlBody}</body>
-            </html>""" + "\n" # Ensure trailing newline
-
-          fs.writeFileSync(htmlFilePath, html)
+          fs.writeFileSync(htmlFilePath, htmlBody)
           atom.workspace.open(htmlFilePath)
 
   isEqual: (other) ->
