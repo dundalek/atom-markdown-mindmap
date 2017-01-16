@@ -47,17 +47,17 @@ module.exports =
 
   activate: ->
     @disposables = new CompositeDisposable
-    
+
     @disposables.add atom.workspace.onDidChangeActivePaneItem (editor) =>
       @autoOpen(editor)
-    
+
     atom.commands.add 'atom-workspace',
       'markdown-mindmap:toggle-auto-mode': =>
         @toggleAutoOpen()
       'markdown-mindmap:toggle': =>
         @toggle()
-      'markdown-mindmap:copy-html': =>
-        @copyHtml()
+      #'markdown-mindmap:copy-html': =>
+      #  @copyHtml()
       'markdown-mindmap:toggle-break-on-single-newline': ->
         keyPath = 'markdown-mindmap.breakOnSingleNewline'
         atom.config.set(keyPath, not atom.config.get(keyPath))
@@ -123,7 +123,7 @@ module.exports =
 
   autoOpen: (editor) ->
     return unless atom.config.get('markdown-mindmap.autoOpen') and editor?
-    
+
     grammars = atom.config.get('markdown-mindmap.grammars') ? []
     newPath = editor.getPath()
     return unless newPath and @activeEditor != newPath and editor.getGrammar?()?.scopeName in grammars
@@ -155,7 +155,7 @@ module.exports =
   # copyHtml: ->
   #   editor = atom.workspace.getActiveTextEditor()
   #   return unless editor?
-  # 
+  #
   #   renderer ?= require './renderer'
   #   text = editor.getSelectedText() or editor.getText()
   #   renderer.toHTML text, editor.getPath(), editor.getGrammar(), (error, html) ->
