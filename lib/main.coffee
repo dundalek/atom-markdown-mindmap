@@ -122,7 +122,8 @@ module.exports =
       false
 
   autoOpen: (editor) ->
-    return unless atom.config.get('markdown-mindmap.autoOpen') and editor?
+    return unless atom.config.get('markdown-mindmap.autoOpen') and editor?.getPath?
+    return if editor.element?.classList.contains('markdown-mindmap')
 
     grammars = atom.config.get('markdown-mindmap.grammars') ? []
     newPath = editor.getPath()
