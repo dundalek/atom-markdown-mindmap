@@ -139,7 +139,7 @@ module.exports =
       searchAllPanes: true
     if atom.config.get('markdown-mindmap.openPreviewInSplitPane')
       options.split = 'right'
-    atom.workspace.open(uri, options).done (markdownMindmapView) ->
+    atom.workspace.open(uri, options).then (markdownMindmapView) ->
       if isMarkdownMindmapView(markdownMindmapView)
         previousActivePane.activate()
 
