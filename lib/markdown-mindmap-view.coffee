@@ -9,6 +9,40 @@ fs = require 'fs-plus'
 markmapParse = require 'markmap/parse.markdown'
 markmapMindmap = require 'markmap/view.mindmap'
 transformHeadings = require 'markmap/transform.headings'
+d3 = require 'd3'
+
+SVG_PADDING = 15
+
+getSVG = ({ body, width, height, viewbox }) ->
+  """<?xml version="1.0" standalone="no"?>
+  <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+    "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+  <svg xmlns="http://www.w3.org/2000/svg" version="1.1"
+       width="#{width}" height="#{height}" viewBox="#{viewbox}">
+    <defs>
+      <style type="text/css"><![CDATA[
+        .markmap-node {
+          cursor: pointer;
+        }
+
+        .markmap-node-circle {
+          fill: #fff;
+          stroke-width: 1.5px;
+        }
+
+        .markmap-node-text {
+          fill:  #000;
+          font: 10px sans-serif;
+        }
+
+        .markmap-link {
+          fill: none;
+        }
+      ]]></style>
+    </defs>
+    #{body}
+  </svg>
+  """
 
 module.exports =
 class MarkdownMindmapView extends ScrollView
@@ -140,11 +174,40 @@ class MarkdownMindmapView extends ScrollView
     else
       Promise.resolve(null)
 
-  # getHTML: (callback) ->
-  #   @getMarkdownSource().then (source) =>
-  #     return unless source?
-  # 
-  #     renderer.toHTML source, @getPath(), @getGrammar(), callback
+  getHTML: (callback) ->
+    state = @mindmap.state
+    nodes = @mindmap.layout(state).nodes
+    minX = Math.round(d3.min(nodes, (d) -> d.x))
+    minY = Math.round(d3.min(nodes, (d) -> d.y))
+    maxX = Math.round(d3.max(nodes, (d) -> d.x))
+    maxY = Math.round(d3.max(nodes, (d) -> d.y))
+    realHeight = maxX - minX
+    realWidth = maxY - minY + state.nodeWidth
+    heightOffset = state.nodeHeight
+
+    minX -= SVG_PADDING;
+    minY -= SVG_PADDING;
+    realHeight += 2*SVG_PADDING;
+    realWidth += 2*SVG_PADDING;
+
+    node = @mindmap.svg.node()
+
+    # unset transformation before we take the svg, we will handle it via viewport setting
+    transform = node.getAttribute('transform')
+    node.removeAttribute('transform')
+
+    # take the svg
+    body = @mindmap.svg.node().parentNode.innerHTML
+
+    # restore the transformation
+    node.setAttribute('transform', transform)
+
+    callback(null, getSVG({
+      body,
+      width: realWidth + 'px',
+      height: realHeight + 'px',
+      viewbox: "#{minY} #{minX - heightOffset} #{realWidth} #{realHeight + heightOffset}"
+    }))
 
   renderMarkdownText: (text) ->
       # if error
