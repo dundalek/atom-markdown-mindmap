@@ -249,7 +249,7 @@ class MarkdownMindmapView extends ScrollView
         cursor = editor.getCursorScreenPosition()
         view = atom.views.getView(editor)
         pixel = view.pixelPositionForScreenPosition(cursor).top
-        editor.setScrollTop pixel
+        editor.getElement().setScrollTop pixel
 
   getTitle: ->
     if @file?
