@@ -43,6 +43,7 @@ module.exports =
         'text.html.basic'
         'text.plain'
         'text.plain.null-grammar'
+        'text.md'
       ]
 
   activate: ->
