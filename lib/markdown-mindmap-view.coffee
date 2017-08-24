@@ -209,6 +209,16 @@ class MarkdownMindmapView extends ScrollView
       viewbox: "#{minY} #{minX - heightOffset} #{realWidth} #{realHeight + heightOffset}"
     }))
 
+  hookEvents: () ->
+    nodes = @mindmap.svg.selectAll('g.markmap-node')
+    toggleHandler = () =>
+      @mindmap.click.apply(@mindmap, arguments)
+      @hookEvents()
+    nodes.on('click', null)
+    nodes.selectAll('circle').on('click', toggleHandler)
+    nodes.selectAll('text,rect').on 'click', (d) =>
+      @scrollToLine d.line
+
   renderMarkdownText: (text) ->
       # if error
       #   @showError(error)
@@ -231,12 +241,7 @@ class MarkdownMindmapView extends ScrollView
       cls += ' markdown-mindmap-theme-' + atom.config.get('markdown-mindmap.theme')
       this.attr('class', cls)
 
-      nodes = @mindmap.svg.selectAll('g.markmap-node')
-      toggleHandler = @mindmap.click.bind @mindmap
-      nodes.on('click', null)
-      nodes.selectAll('circle').on('click', toggleHandler)
-      nodes.selectAll('text,rect').on 'click', (d) =>
-        @scrollToLine d.line
+      @hookEvents()
 
       @emitter.emit 'did-change-markdown'
       @originalTrigger('markdown-mindmap:markdown-changed')
