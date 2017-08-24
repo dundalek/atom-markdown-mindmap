@@ -2,6 +2,13 @@
 
 Type `mind` in the Atom command palette to open a mindmap view of the current markdown file. The full command name is `Markdown Mindmap: Toggle`.
 
+By default there is no keyboard shortcut to avoid conflicts. If you want to use one open menu `Edit -> Keymap...` and add this to the file:
+
+```
+'atom-workspace':
+  'ctrl-alt-m': 'markdown-mindmap:toggle'
+```
+
 ![Mindmap screenshot](https://github.com/dundalek/atom-markdown-mindmap/blob/master/screenshot.gif?raw=true)
 
 You can switch between different themes in package settings. Dark themes variants are also available.
