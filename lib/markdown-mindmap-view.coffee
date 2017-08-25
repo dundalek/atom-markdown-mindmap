@@ -162,6 +162,8 @@ class MarkdownMindmapView extends ScrollView
 
     @disposables.add atom.config.observe 'markdown-mindmap.linkShape', changeHandler
 
+    @disposables.add atom.config.observe 'markdown-mindmap.parseListItems', changeHandler
+
   renderMarkdown: ->
     @showLoading() unless @loaded
     @getMarkdownSource().then (source) => @renderMarkdownText(source) if source?
@@ -227,7 +229,7 @@ class MarkdownMindmapView extends ScrollView
       @loaded = true
 
       # TODO paralel rendering
-      data = markmapParse(text)
+      data = markmapParse(text, {lists: atom.config.get('markdown-mindmap.parseListItems')})
       data = transformHeadings(data)
       options =
         preset: atom.config.get('markdown-mindmap.theme').replace(/-dark$/, '')

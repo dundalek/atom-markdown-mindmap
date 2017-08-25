@@ -27,6 +27,9 @@ module.exports =
     openPreviewInSplitPane:
       type: 'boolean'
       default: true
+    parseListItems:
+      type: 'boolean'
+      default: true
     theme:
       type: 'string'
       default: 'default'
