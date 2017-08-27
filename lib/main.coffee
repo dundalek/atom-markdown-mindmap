@@ -38,6 +38,11 @@ module.exports =
       type: 'string'
       default: 'diagonal'
       enum: ['diagonal', 'bracket']
+    truncateLabels:
+      type: 'integer'
+      default: 40
+      minimum: 0
+      description: "Set to 0 to disable truncating"
     grammars:
       type: 'array'
       default: [

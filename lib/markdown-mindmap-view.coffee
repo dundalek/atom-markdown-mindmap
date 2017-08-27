@@ -165,6 +165,8 @@ class MarkdownMindmapView extends ScrollView
 
     @disposables.add atom.config.observe 'markdown-mindmap.parseListItems', changeHandler
 
+    @disposables.add atom.config.observe 'markdown-mindmap.truncateLabels', changeHandler
+
   renderMarkdown: ->
     @showLoading() unless @loaded
     @getMarkdownSource().then (source) => @renderMarkdownText(source) if source?
@@ -235,6 +237,7 @@ class MarkdownMindmapView extends ScrollView
       options =
         preset: atom.config.get('markdown-mindmap.theme').replace(/-dark$/, '')
         linkShape: atom.config.get('markdown-mindmap.linkShape')
+        truncateLabels: atom.config.get('markdown-mindmap.truncateLabels')
       if not @mindmap?
         @mindmap = markmapMindmap($('<svg style="height: 100%; width: 100%"></svg>').appendTo(this).get(0), data, options)
       else
