@@ -10,6 +10,7 @@ markmapParse = require 'markmap/parse.markdown'
 markmapMindmap = require 'markmap/view.mindmap'
 transformHeadings = require 'markmap/transform.headings'
 d3 = require 'd3'
+require 'markmap/d3-flextree'
 
 SVG_PADDING = 15
 
@@ -182,9 +183,9 @@ class MarkdownMindmapView extends ScrollView
     minX = Math.round(d3.min(nodes, (d) -> d.x))
     minY = Math.round(d3.min(nodes, (d) -> d.y))
     maxX = Math.round(d3.max(nodes, (d) -> d.x))
-    maxY = Math.round(d3.max(nodes, (d) -> d.y))
+    maxY = Math.round(d3.max(nodes, (d) -> d.y + d.y_size))
     realHeight = maxX - minX
-    realWidth = maxY - minY + state.nodeWidth
+    realWidth = maxY - minY
     heightOffset = state.nodeHeight
 
     minX -= SVG_PADDING;
