@@ -18,3 +18,12 @@ You can switch between different themes in package settings. Dark themes variant
 This extension is built using the [markmap](https://github.com/dundalek/markmap) component.
 
 Suggestions for new featues are welcome, feel free to open an [issue](https://github.com/dundalek/atom-markdown-mindmap/issues).
+
+## Changelog
+
+### v0.4.0
+
+- Make node width dynamic based on content
+- Truncate long labels (can be switched off in settings)
+- Parse markdown lists and display them as nodes (can be switched off in settings)
+- Fix: navigation bug after collapsing and re-expanding nodes
