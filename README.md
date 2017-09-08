@@ -21,6 +21,10 @@ Suggestions for new featues are welcome, feel free to open an [issue](https://gi
 
 ## Changelog
 
+### v0.4.1
+
+- Fixes Block size for capital letters #29
+
 ### v0.4.0
 
 - Make node width dynamic based on content
