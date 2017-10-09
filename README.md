@@ -21,6 +21,11 @@ Suggestions for new featues are welcome, feel free to open an [issue](https://gi
 
 ## Changelog
 
+### 0.4.2
+
+- Fix node width for non-lation characters (using canvas to measure text width)
+- Add support for markdown numbered lists 
+
 ### v0.4.1
 
 - Fixes Block size for capital letters #29
