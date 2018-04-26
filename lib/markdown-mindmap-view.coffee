@@ -45,6 +45,16 @@ getSVG = ({ body, width, height, viewbox }) ->
   </svg>
   """
 
+transformLinks = (headings, context) ->
+  dir = path.dirname(context)
+  headings.forEach (h) ->
+    if h.href
+      if not h.name
+        h.name = path.basename h.href
+      if h.href[0] != "/"
+        h.href = path.resolve dir, h.href
+  headings
+
 module.exports =
 class MarkdownMindmapView extends ScrollView
   @content: ->
@@ -166,13 +176,14 @@ class MarkdownMindmapView extends ScrollView
 
   renderMarkdown: ->
     @showLoading() unless @loaded
-    @getMarkdownSource().then (source) => @renderMarkdownText(source) if source?
+    @getMarkdownSource().then ([source, filepath]) => @renderMarkdownText(source, filepath) if source?
 
   getMarkdownSource: ->
+    filepath = @getPath()
     if @file?
-      @file.read()
+      @file.read().then (source) -> [source, filepath]
     else if @editor?
-      Promise.resolve(@editor.getText())
+      Promise.resolve([@editor.getText(), filepath])
     else
       Promise.resolve(null)
 
@@ -214,14 +225,23 @@ class MarkdownMindmapView extends ScrollView
   hookEvents: () ->
     nodes = @mindmap.svg.selectAll('g.markmap-node')
     toggleHandler = () =>
-      @mindmap.click.apply(@mindmap, arguments)
-      @hookEvents()
+      node = arguments[0]
+      if node.href and not (node.children or node._children)
+        (new File(node.href)).read().then (text) =>
+          data = markmapParse(text, {lists: atom.config.get('markdown-mindmap.parseListItems')})
+          data = transformHeadings(transformLinks(data, node.href))
+          node.children = data.children
+          @mindmap.update.apply(@mindmap, arguments)
+          @hookEvents()
+      else
+        @mindmap.click.apply(@mindmap, arguments)
+        @hookEvents()
     nodes.on('click', null)
     nodes.selectAll('circle').on('click', toggleHandler)
     nodes.selectAll('text,rect').on 'click', (d) =>
       @scrollToLine d.line
 
-  renderMarkdownText: (text) ->
+  renderMarkdownText: (text, filepath) ->
       # if error
       #   @showError(error)
       # else
@@ -230,7 +250,7 @@ class MarkdownMindmapView extends ScrollView
 
       # TODO paralel rendering
       data = markmapParse(text, {lists: atom.config.get('markdown-mindmap.parseListItems')})
-      data = transformHeadings(data)
+      data = transformHeadings(transformLinks(data, filepath))
       options =
         preset: atom.config.get('markdown-mindmap.theme').replace(/-dark$/, '')
         linkShape: atom.config.get('markdown-mindmap.linkShape')
