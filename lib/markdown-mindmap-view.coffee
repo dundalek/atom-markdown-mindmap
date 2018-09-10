@@ -228,10 +228,10 @@ class MarkdownMindmapView extends ScrollView
       node = arguments[0]
       if node.href and not (node.children or node._children)
         (new File(node.href)).read().then (text) =>
-          data = markmapParse(text, {lists: atom.config.get('markdown-mindmap.parseListItems')})
-          data = transformHeadings(transformLinks(data, node.href))
-          node.children = data.children
-          @mindmap.update.apply(@mindmap, arguments)
+          data = @parseMarkdown(text, node.href)
+          if (data.children.length > 0)
+            node.children = data.children
+          @mindmap.update node
           @hookEvents()
       else
         @mindmap.click.apply(@mindmap, arguments)
@@ -241,6 +241,13 @@ class MarkdownMindmapView extends ScrollView
     nodes.selectAll('text,rect').on 'click', (d) =>
       @scrollToLine d.line
 
+  parseMarkdown: (text, filepath) ->
+    data = markmapParse(text, {
+      lists: atom.config.get('markdown-mindmap.parseListItems')
+      links: true
+    })
+    transformHeadings(transformLinks(data, filepath))
+
   renderMarkdownText: (text, filepath) ->
       # if error
       #   @showError(error)
@@ -249,8 +256,7 @@ class MarkdownMindmapView extends ScrollView
       @loaded = true
 
       # TODO paralel rendering
-      data = markmapParse(text, {lists: atom.config.get('markdown-mindmap.parseListItems')})
-      data = transformHeadings(transformLinks(data, filepath))
+      data = @parseMarkdown(text, filepath)
       options =
         preset: atom.config.get('markdown-mindmap.theme').replace(/-dark$/, '')
         linkShape: atom.config.get('markdown-mindmap.linkShape')
