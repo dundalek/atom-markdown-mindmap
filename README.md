@@ -21,20 +21,22 @@ Suggestions for new featues are welcome, feel free to open an [issue](https://gi
 
 ## Changelog
 
-### master (unreleased)
+### [0.5.0](https://github.com/dundalek/closh/compare/v0.4.2...v0.5.0) (2018-09-10)
 
-- Fix: Update deprecated save dialog [#37](https://github.com/dundalek/atom-markdown-mindmap/issues/37)
+- Add support for links across files
+- Fix syncing scroll position when using [markdown-preview-enhanced](https://github.com/shd101wyy/markdown-preview-enhanced) plugin [#12](https://github.com/dundalek/atom-markdown-mindmap/issues/12)
+- Fix deprecated save dialog [#37](https://github.com/dundalek/atom-markdown-mindmap/issues/37)
 
 ### 0.4.2
 
 - Fix node width for non-lation characters (using canvas to measure text width)
 - Add support for markdown numbered lists
 
-### v0.4.1
+### 0.4.1
 
 - Fixes Block size for capital letters #29
 
-### v0.4.0
+### 0.4.0
 
 - Make node width dynamic based on content
 - Truncate long labels (can be switched off in settings)
