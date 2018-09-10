@@ -232,8 +232,10 @@ class MarkdownMindmapView extends ScrollView
           data = @parseMarkdown(text, node.href)
           if (data.children.length > 0)
             node.children = data.children
-          @mindmap.update node
-          @hookEvents()
+            @mindmap.update node
+            @hookEvents()
+          else
+            @scrollToLine(node.href, 0)
       else
         @mindmap.click.apply(@mindmap, arguments)
         @hookEvents()
