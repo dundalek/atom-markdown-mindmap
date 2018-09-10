@@ -42,3 +42,9 @@ Suggestions for new featues are welcome, feel free to open an [issue](https://gi
 - Truncate long labels (can be switched off in settings)
 - Parse markdown lists and display them as nodes (can be switched off in settings)
 - Fix: navigation bug after collapsing and re-expanding nodes
+
+## Publishing
+
+Notes to myself:
+- Do not use `npm version` before publishing, just use `apm publish major|minor|patch` which takes care of everything.
+- If the command asks for username and password then [personal access token](https://help.github.com/articles/creating-a-personal-access-token-for-the-command-line/) can be used in place of the password.
