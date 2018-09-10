@@ -21,7 +21,7 @@ Suggestions for new featues are welcome, feel free to open an [issue](https://gi
 
 ## Changelog
 
-### [0.5.0](https://github.com/dundalek/closh/compare/v0.4.2...v0.5.0) (2018-09-10)
+### [0.5.0](https://github.com/dundalek/atom-markdown-mindmap/compare/v0.4.2...v0.5.0) (2018-09-10)
 
 - Add support for links across files
 - Fix syncing scroll position when using [markdown-preview-enhanced](https://github.com/shd101wyy/markdown-preview-enhanced) plugin [#12](https://github.com/dundalek/atom-markdown-mindmap/issues/12)
