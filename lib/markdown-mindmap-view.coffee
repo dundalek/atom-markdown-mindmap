@@ -45,9 +45,10 @@ getSVG = ({ body, width, height, viewbox }) ->
   </svg>
   """
 
-transformLinks = (headings, context) ->
-  dir = path.dirname(context)
+transformLinks = (headings, filepath) ->
+  dir = path.dirname(filepath)
   headings.forEach (h) ->
+    h.filepath = filepath
     if h.href
       if not h.name
         h.name = path.basename h.href
@@ -239,7 +240,7 @@ class MarkdownMindmapView extends ScrollView
     nodes.on('click', null)
     nodes.selectAll('circle').on('click', toggleHandler)
     nodes.selectAll('text,rect').on 'click', (d) =>
-      @scrollToLine d.line
+      @scrollToLine(d.filepath || @getPath(), d.line)
 
   parseMarkdown: (text, filepath) ->
     data = markmapParse(text, {
@@ -276,8 +277,8 @@ class MarkdownMindmapView extends ScrollView
       @emitter.emit 'did-change-markdown'
       @originalTrigger('markdown-mindmap:markdown-changed')
 
-  scrollToLine: (line) ->
-    atom.workspace.open(@getPath(),
+  scrollToLine: (filepath, line) ->
+    atom.workspace.open(filepath,
       initialLine: line
       activatePane: true
       searchAllPanes: true).then (editor) ->
