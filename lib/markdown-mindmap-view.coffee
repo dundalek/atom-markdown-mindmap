@@ -126,9 +126,6 @@ class MarkdownMindmapView extends ScrollView
       #   @scrollUp()
       # 'core:move-down': =>
       #   @scrollDown()
-      'core:save-as': (event) =>
-        event.stopPropagation()
-        @saveAs()
       'core:copy': (event) =>
         event.stopPropagation() if @copyToClipboard()
       # 'markdown-mindmap:zoom-in': =>
@@ -356,27 +353,27 @@ class MarkdownMindmapView extends ScrollView
 
     true
 
-  saveAs: ->
-    return if @loading
-
-    filePath = @getPath()
-    title = 'Markdown to SVG'
-    if filePath
-      title = path.parse(filePath).name
-      filePath += '.svg'
+  getSaveDialogOptions: ->
+    defaultPath = @getPath()
+    if defaultPath
+      defaultPath += '.svg'
     else
-      filePath = 'untitled.md.svg'
+      defaultPath = 'untitled.md.svg'
       if projectPath = atom.project.getPaths()[0]
-        filePath = path.join(projectPath, filePath)
+        defaultPath = path.join(projectPath, defaultPath)
 
-    if htmlFilePath = atom.showSaveDialogSync(filePath)
+    return {defaultPath}
 
-      @getSVG (error, htmlBody) =>
-        if error?
-          console.warn('Saving Markdown as SVG failed', error)
-        else
-          fs.writeFileSync(htmlFilePath, htmlBody)
-          atom.workspace.open(htmlFilePath)
+  saveAs: (htmlFilePath) ->
+    if @loading
+      atom.notifications.addWarning('Please wait until the Mindmap Preview has finished loading before saving')
+      return
+
+    @getSVG (error, htmlBody) =>
+      if error?
+        console.warn('Saving Markdown as SVG failed', error)
+      else
+        fs.writeFileSync(htmlFilePath, htmlBody)
 
   isEqual: (other) ->
     @[0] is other?[0] # Compare DOM elements

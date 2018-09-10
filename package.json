@@ -6,7 +6,7 @@
   "repository": "https://github.com/dundalek/atom-markdown-mindmap",
   "license": "MIT",
   "engines": {
-    "atom": "*"
+    "atom": ">=1.24.0 <2.0.0"
   },
   "dependencies": {
     "atom-space-pen-views": "^2.0.0",

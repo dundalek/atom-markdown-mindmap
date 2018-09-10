@@ -21,10 +21,14 @@ Suggestions for new featues are welcome, feel free to open an [issue](https://gi
 
 ## Changelog
 
+### master (unreleased)
+
+- Fix: Update deprecated save dialog [#37](https://github.com/dundalek/atom-markdown-mindmap/issues/37)
+
 ### 0.4.2
 
 - Fix node width for non-lation characters (using canvas to measure text width)
-- Add support for markdown numbered lists 
+- Add support for markdown numbered lists
 
 ### v0.4.1
 
