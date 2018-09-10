@@ -252,12 +252,17 @@ class MarkdownMindmapView extends ScrollView
   scrollToLine: (line) ->
     atom.workspace.open(@getPath(),
       initialLine: line
-      activatePane: false
+      activatePane: true
       searchAllPanes: true).then (editor) ->
         cursor = editor.getCursorScreenPosition()
         view = atom.views.getView(editor)
         pixel = view.pixelPositionForScreenPosition(cursor).top
         editor.getElement().setScrollTop pixel
+
+        # A trick to allow preview plugins like markdown-preview-enhanced to sync scroll position
+        setTimeout ->
+          editor.setCursorBufferPosition([line, Infinity])
+        , 0
 
   getTitle: ->
     if @file?
