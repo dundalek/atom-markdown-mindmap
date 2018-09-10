@@ -255,10 +255,11 @@ class MarkdownMindmapView extends ScrollView
         preset: atom.config.get('markdown-mindmap.theme').replace(/-dark$/, '')
         linkShape: atom.config.get('markdown-mindmap.linkShape')
         truncateLabels: atom.config.get('markdown-mindmap.truncateLabels')
+        duration: 400
       if not @mindmap?
         @mindmap = markmapMindmap($('<svg style="height: 100%; width: 100%"></svg>').appendTo(this).get(0), data, options)
       else
-        @mindmap.setData(data).set(options).set({duration: 0}).update().set({duration: 750})
+        @mindmap.setData(data).set(options).set({duration: 0}).update().set({duration: options.duration})
 
       cls = this.attr('class').replace(/markdown-mindmap-theme-[^\s]+/, '')
       cls += ' markdown-mindmap-theme-' + atom.config.get('markdown-mindmap.theme')
