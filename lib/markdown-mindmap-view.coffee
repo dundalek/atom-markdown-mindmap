@@ -226,40 +226,37 @@ class MarkdownMindmapView extends ScrollView
     }))
 
   createNodeWatcher: (node) ->
-    atom.workspace.createItemForURI(node.href).then (editor) =>
-      if atom.workspace.isTextEditor(editor)
+    atom.workspace.openTextFile(node.href)
+    .then (editor) =>
         buffer = editor.getBuffer()
         # TODO likely to need to destroy buffer later
         buffer.retain()
         editor.destroy()
         buffer.onDidChange () =>
-          if node.children
-            data = @parseMarkdown(buffer.getText(), node.href)
-            @mindmap.preprocessData(data, node)
-            node.children = data.children
-            duration = @mindmap.state.duration
-            @mindmap.set({duration: 0}).update().set({duration})
-            @hookEvents()
-      else
+          @updateSubtree(node, buffer.getText())
+    .catch =>
         f = new File(node.path)
         f.onDidChange () =>
           f.read().then (text) =>
-            if node.children
-              data = @parseMarkdown(text, node.href)
-              @mindmap.preprocessData(data, node)
-              node.children = data.children
-              duration = @mindmap.state.duration
-              @mindmap.set({duration: 0}).update().set({duration})
-              @hookEvents()
+            @updateSubtree(node, text)
+
+  updateSubtree: (node, text) ->
+    if node.children
+      data = @parseMarkdown(text, node.href)
+      @mindmap.preprocessData(data, node)
+      node.children = data.children
+      duration = @mindmap.state.duration
+      @mindmap.set({duration: 0}).update().set({duration})
+      @hookEvents()
 
   loadTextContent: (uri) ->
-    atom.workspace.createItemForURI(uri).then (editor) =>
-      if atom.workspace.isTextEditor(editor)
-        text = editor.getBuffer().getText()
-        editor.destroy()
-        text
-      else
-        new File(uri).read()
+    atom.workspace.openTextFile(uri)
+    .then (editor) =>
+      text = editor.getBuffer().getText()
+      editor.destroy()
+      text
+    .catch =>
+      new File(uri).read()
 
   hookEvents: () ->
     nodes = @mindmap.svg.selectAll('g.markmap-node')
@@ -305,6 +302,7 @@ class MarkdownMindmapView extends ScrollView
       promises = []
       files = {}
 
+      # Collect expanded sub trees
       if @mindmap?.state.root
         traverse = (node) ->
           if node.href and (node.children or node._children)
@@ -313,6 +311,7 @@ class MarkdownMindmapView extends ScrollView
             node.children.forEach(traverse)
         traverse(@mindmap.state.root)
 
+      # Load content for collected sub trees into the new tree
       traverse = (node) =>
         if node.href and files[node.href]
           promises.push @loadTextContent(node.href).then (text) =>
