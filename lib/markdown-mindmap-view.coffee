@@ -65,6 +65,7 @@ class MarkdownMindmapView extends ScrollView
     super
     @emitter = new Emitter
     @disposables = new CompositeDisposable
+    @watchers = new CompositeDisposable
     @loaded = false
 
   attached: ->
@@ -87,6 +88,7 @@ class MarkdownMindmapView extends ScrollView
 
   destroy: ->
     @disposables.dispose()
+    @watchers.dispose()
 
   onDidChangeTitle: (callback) ->
     @emitter.on 'did-change-title', callback
@@ -223,19 +225,59 @@ class MarkdownMindmapView extends ScrollView
       viewbox: "#{minY} #{minX - heightOffset} #{realWidth} #{realHeight + heightOffset}"
     }))
 
+  createNodeWatcher: (node) ->
+    atom.workspace.createItemForURI(node.href).then (editor) =>
+      if atom.workspace.isTextEditor(editor)
+        buffer = editor.getBuffer()
+        # TODO likely to need to destroy buffer later
+        buffer.retain()
+        editor.destroy()
+        buffer.onDidChange () =>
+          if node.children
+            data = @parseMarkdown(buffer.getText(), node.href)
+            @mindmap.preprocessData(data, node)
+            node.children = data.children
+            duration = @mindmap.state.duration
+            @mindmap.set({duration: 0}).update().set({duration})
+            @hookEvents()
+      else
+        f = new File(node.path)
+        f.onDidChange () =>
+          f.read().then (text) =>
+            if node.children
+              data = @parseMarkdown(text, node.href)
+              @mindmap.preprocessData(data, node)
+              node.children = data.children
+              duration = @mindmap.state.duration
+              @mindmap.set({duration: 0}).update().set({duration})
+              @hookEvents()
+
+  loadTextContent: (uri) ->
+    atom.workspace.createItemForURI(uri).then (editor) =>
+      if atom.workspace.isTextEditor(editor)
+        text = editor.getBuffer().getText()
+        editor.destroy()
+        text
+      else
+        new File(uri).read()
+
   hookEvents: () ->
     nodes = @mindmap.svg.selectAll('g.markmap-node')
     toggleHandler = () =>
       node = arguments[0]
-      if node.href and not (node.children or node._children)
-        (new File(node.href)).read().then (text) =>
+      if node.href and not node.children
+        @loadTextContent(node.href).then (text) =>
+          delete node._children
           data = @parseMarkdown(text, node.href)
           if (data.children.length > 0)
+            @mindmap.preprocessData(data, node)
             node.children = data.children
             @mindmap.update node
             @hookEvents()
           else
             @scrollToLine(node.href, 0)
+        @createNodeWatcher(node).then (subscription) =>
+          @watchers.add subscription
       else
         @mindmap.click.apply(@mindmap, arguments)
         @hookEvents()
@@ -255,29 +297,59 @@ class MarkdownMindmapView extends ScrollView
       # if error
       #   @showError(error)
       # else
-      @hideLoading()
-      @loaded = true
 
       # TODO paralel rendering
       data = @parseMarkdown(text, filepath)
-      options =
-        preset: atom.config.get('markdown-mindmap.theme').replace(/-dark$/, '')
-        linkShape: atom.config.get('markdown-mindmap.linkShape')
-        truncateLabels: atom.config.get('markdown-mindmap.truncateLabels')
-        duration: 400
-      if not @mindmap?
-        @mindmap = markmapMindmap($('<svg style="height: 100%; width: 100%"></svg>').appendTo(this).get(0), data, options)
-      else
-        @mindmap.setData(data).set(options).set({duration: 0}).update().set({duration: options.duration})
 
-      cls = this.attr('class').replace(/markdown-mindmap-theme-[^\s]+/, '')
-      cls += ' markdown-mindmap-theme-' + atom.config.get('markdown-mindmap.theme')
-      this.attr('class', cls)
+      watchers = new CompositeDisposable
+      promises = []
+      files = {}
 
-      @hookEvents()
+      if @mindmap?.state.root
+        traverse = (node) ->
+          if node.href and (node.children or node._children)
+            files[node.href] = true
+          if node.children
+            node.children.forEach(traverse)
+        traverse(@mindmap.state.root)
 
-      @emitter.emit 'did-change-markdown'
-      @originalTrigger('markdown-mindmap:markdown-changed')
+      traverse = (node) =>
+        if node.href and files[node.href]
+          promises.push @loadTextContent(node.href).then (text) =>
+            childData = @parseMarkdown(text, node.href)
+            @mindmap.preprocessData(childData, node)
+            node.children = childData.children
+          @createNodeWatcher(node).then (subscription) =>
+            watchers.add subscription
+        if node.children
+          node.children.forEach(traverse)
+      traverse(data)
+
+      @watchers.dispose()
+      @watchers = watchers
+
+      Promise.all(promises).then =>
+        @hideLoading()
+        @loaded = true
+
+        options =
+          preset: atom.config.get('markdown-mindmap.theme').replace(/-dark$/, '')
+          linkShape: atom.config.get('markdown-mindmap.linkShape')
+          truncateLabels: atom.config.get('markdown-mindmap.truncateLabels')
+          duration: 400
+        if not @mindmap?
+          @mindmap = markmapMindmap($('<svg style="height: 100%; width: 100%"></svg>').appendTo(this).get(0), data, options)
+        else
+          @mindmap.setData(data).set(options).set({duration: 0}).update().set({duration: options.duration})
+
+        cls = this.attr('class').replace(/markdown-mindmap-theme-[^\s]+/, '')
+        cls += ' markdown-mindmap-theme-' + atom.config.get('markdown-mindmap.theme')
+        this.attr('class', cls)
+
+        @hookEvents()
+
+        @emitter.emit 'did-change-markdown'
+        @originalTrigger('markdown-mindmap:markdown-changed')
 
   scrollToLine: (filepath, line) ->
     atom.workspace.open(filepath,
