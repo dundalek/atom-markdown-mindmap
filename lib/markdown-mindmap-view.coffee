@@ -6,11 +6,11 @@ Grim = require 'grim'
 _ = require 'underscore-plus'
 fs = require 'fs-plus'
 {File} = require 'atom'
-markmapParse = require 'markmap/src/parse.markdown'
-markmapMindmap = require 'markmap/src/view.mindmap'
-transformHeadings = require 'markmap/src/transform.headings'
+markmapParse = require 'markmap/lib/parse.markdown'
+markmapMindmap = require 'markmap/lib/view.mindmap'
+transformHeadings = require 'markmap/lib/transform.headings'
 d3 = require 'd3'
-require 'markmap/src/d3-flextree'
+require 'markmap/lib/d3-flextree'
 
 SVG_PADDING = 15
 
