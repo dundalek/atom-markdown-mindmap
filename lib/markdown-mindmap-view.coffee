@@ -13,6 +13,7 @@ d3 = require 'd3'
 require 'markmap/lib/d3-flextree'
 
 SVG_PADDING = 15
+SCHEME_REGEX = /[a-zA-Z][-+.a-zA-Z0-9]*:\/\//
 
 getSVG = ({ body, width, height, viewbox }) ->
   """<?xml version="1.0" standalone="no"?>
@@ -47,14 +48,18 @@ getSVG = ({ body, width, height, viewbox }) ->
 
 transformLinks = (headings, filepath) ->
   dir = path.dirname(filepath)
+  result = []
   headings.forEach (h) ->
     h.filepath = filepath
     if h.href
+      if h.href.match SCHEME_REGEX
+        return
       if not h.name
         h.name = path.basename h.href
       if h.href[0] != "/"
         h.href = path.resolve dir, h.href
-  headings
+    result.push h
+  result
 
 module.exports =
 class MarkdownMindmapView extends ScrollView
