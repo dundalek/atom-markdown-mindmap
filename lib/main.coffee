@@ -30,6 +30,9 @@ module.exports =
     parseListItems:
       type: 'boolean'
       default: true
+    parseNestedLinks:
+      type: 'boolean'
+      default: true
     theme:
       type: 'string'
       default: 'default'

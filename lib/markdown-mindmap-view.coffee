@@ -180,6 +180,8 @@ class MarkdownMindmapView extends ScrollView
 
     @disposables.add atom.config.observe 'markdown-mindmap.parseListItems', changeHandler
 
+    @disposables.add atom.config.observe 'markdown-mindmap.parseNestedLinks', changeHandler
+
     @disposables.add atom.config.observe 'markdown-mindmap.truncateLabels', changeHandler
 
   renderMarkdown: ->
@@ -291,7 +293,7 @@ class MarkdownMindmapView extends ScrollView
   parseMarkdown: (text, filepath) ->
     data = markmapParse(text, {
       lists: atom.config.get('markdown-mindmap.parseListItems')
-      links: true
+      links: atom.config.get('markdown-mindmap.parseNestedLinks')
     })
     transformHeadings(transformLinks(data, filepath))
 
