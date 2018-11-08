@@ -21,6 +21,10 @@ Suggestions for new featues are welcome, feel free to open an [issue](https://gi
 
 ## Changelog
 
+### [0.6.1](https://github.com/dundalek/atom-markdown-mindmap/compare/v0.6.0...v0.6.1) (2018-11-08)
+
+- Forgot to update the markmap dependency needed for the new features
+
 ### [0.6.0](https://github.com/dundalek/atom-markdown-mindmap/compare/v0.5.0...v0.6.0) (2018-11-08)
 
 - Keep state of folded/unfolded nodes on update ([#20](https://github.com/dundalek/atom-markdown-mindmap/issues/20))
