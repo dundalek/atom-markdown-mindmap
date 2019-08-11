@@ -295,7 +295,9 @@ class MarkdownMindmapView extends ScrollView
       lists: atom.config.get('markdown-mindmap.parseListItems')
       links: atom.config.get('markdown-mindmap.parseNestedLinks')
     })
-    transformHeadings(transformLinks(data, filepath))
+    if filepath
+      data = transformLinks(data, filepath)
+    transformHeadings(data)
 
   renderMarkdownText: (text, filepath) ->
       # if error
