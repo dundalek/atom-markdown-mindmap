@@ -21,6 +21,10 @@ Suggestions for new featues are welcome, feel free to open an [issue](https://gi
 
 ## Changelog
 
+### [0.6.2](https://github.com/dundalek/atom-markdown-mindmap/compare/v0.6.1...v0.6.2) (2019-08-11)
+
+- Fix error for newly created unsaved file ([#43](https://github.com/dundalek/atom-markdown-mindmap/issues/43))
+
 ### [0.6.1](https://github.com/dundalek/atom-markdown-mindmap/compare/v0.6.0...v0.6.1) (2018-11-08)
 
 - Forgot to update the markmap dependency needed for the new features
